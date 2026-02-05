@@ -1,0 +1,13 @@
+[Unit]
+ Description=
+ After=multi-user.target
+
+ [Service]
+ WorkingDirectory=/home/mnalavadi/project
+ Type=idle
+ ExecStart=/home/mnalavadi/.local/bin/uv run app
+ User=mnalavadi
+
+ [Install]
+ WantedBy=multi-user.target
+ 

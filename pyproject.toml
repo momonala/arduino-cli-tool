@@ -1,0 +1,71 @@
+[project]
+name = "arduino-cli-tool"
+version = "0.1.0"
+description = "Simplified CLI wrapper for arduino-cli"
+authors = [{name = "Mohit Nalavadi"}]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "black",
+    "jupyter>=1.1.1",
+    "notebook>=7.5.1",
+    "pandas>=2.3.3",
+    "ruff>=0.14.10",
+    "isort>=7.0.0",
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+]
+
+[tool.config]
+
+[tool.arduino]
+fqbn = "esp32:esp32:esp32"
+upload_speed = 115200
+baudrate = 115200
+sketch_path = "."
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[project.scripts]
+config = "src.config:main"
+arduino-cli-tool = "src.arduino:main"
+
+[tool.black]
+line-length = 110
+target-version = ['py312']
+include = '\.pyi?$'
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+
+[tool.isort]
+force_single_line = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-s -v --cov=. --cov-report=term-missing"
+
+[tool.coverage.run]
+omit = ["tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
