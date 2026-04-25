@@ -14,28 +14,6 @@ uv sync
 alias arduino='uv run --project ~/code/projects/arduino-cli-tool arduino-cli-tool'
 ```
 
-## Quick Start
-
-```bash
-# Compile only
-arduino compile
-
-# Upload (auto-detects USB board)
-arduino upload
-
-# Monitor serial port
-arduino monitor
-
-# Run all three in sequence
-arduino run
-
-# Show connected USB boards
-arduino show boards
-
-# Show installed libraries
-arduino show libraries
-```
-
 ## Configuration
 
 Edit `pyproject.toml` under `[tool.arduino]`:
@@ -48,7 +26,7 @@ baudrate = 115200
 sketch_path = "."
 ```
 
-All values can be overridden via CLI flags.
+All values can be overridden via CLI flags, e.g. `arduino upload --port /dev/cu.usbserial-110 --speed 921600`.
 
 ## Commands
 
@@ -67,19 +45,6 @@ All values can be overridden via CLI flags.
 - `arduino show config` - Show current tool configuration
 - `arduino version` - Show arduino-cli version
 
-## Examples
-
-```bash
-# Compile with custom FQBN
-arduino compile --fqbn esp32:esp32:esp32
-
-# Upload to specific port
-arduino upload --port /dev/cu.usbserial-110 --speed 921600
-
-# Run with all custom options
-arduino run --fqbn esp32:esp32:esp32 --port /dev/cu.usbserial-110 --speed 921600 --baudrate 115200
-```
-
 ## Requirements
 
 - Python 3.12+
@@ -94,5 +59,6 @@ src/
 ├── board.py            # Board detection logic
 ├── cli.py              # arduino-cli execution with streaming
 ├── info.py             # Info display commands
-└── arduino_config.py   # Configuration management
+├── arduino_config.py   # Reads [tool.arduino] from pyproject.toml
+└── config.py           # Generic project-name/version CLI (uv run config --all); unrelated to [tool.arduino]
 ```

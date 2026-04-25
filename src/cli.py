@@ -107,6 +107,13 @@ def upload(fqbn: str, port: str, upload_speed: int, sketch_path: str = ".") -> i
 
 def monitor(port: str, baudrate: int) -> int:
     """Open serial monitor on port at baudrate."""
+    check_arduino_cli()
     console.print(f"[cyan]Monitoring {port} at {baudrate} baud[/cyan]")
     console.print("[yellow]Press Ctrl+C to exit monitor[/yellow]\n")
-    return run(["monitor", "--port", port, "--config", f"baudrate={baudrate}"])
+    cmd = ["arduino-cli", "monitor", "--port", port, "--config", f"baudrate={baudrate}"]
+    try:
+        result = subprocess.run(cmd)
+        return result.returncode
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Interrupted by user[/yellow]")
+        return 130
