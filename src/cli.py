@@ -11,6 +11,7 @@ from src.board import check_arduino_cli
 console = Console(force_terminal=True)
 
 PROGRESS_LINE_WIDTH = 140
+ESP_CORE_PREFIXES = ("esp32:", "esp8266:")
 UPLOAD_PROGRESS_RE = re.compile(r"Writing at 0x[0-9a-f]+.*\d+\.\d+%")
 ERROR_PATTERNS = [
     (r"fatal error:", "[bold red]"),
@@ -93,16 +94,23 @@ def run(args: list[str], cwd: Path | None = None) -> int:
 def compile(fqbn: str, sketch_path: str = ".") -> int:
     """Compile sketch for given FQBN."""
     console.print(f"[cyan]Compiling with FQBN: {fqbn}[/cyan]")
-    return run(["compile", "--fqbn", fqbn, sketch_path], cwd=Path(sketch_path))
+    return run(["compile", "--fqbn", fqbn, "."], cwd=Path(sketch_path))
+
+
+def with_upload_speed(fqbn: str, upload_speed: int) -> str:
+    """Add the UploadSpeed board option for ESP cores; other cores (e.g. AVR) have no such option."""
+    if not fqbn.startswith(ESP_CORE_PREFIXES):
+        return fqbn
+    separator = "," if fqbn.count(":") >= 3 else ":"
+    return f"{fqbn}{separator}UploadSpeed={upload_speed}"
 
 
 def upload(fqbn: str, port: str, upload_speed: int, sketch_path: str = ".") -> int:
-    """Upload sketch to port at given speed."""
-    console.print(f"[cyan]Uploading to {port} at {upload_speed} baud[/cyan]")
-    return run(
-        ["upload", "--fqbn", f"{fqbn}:UploadSpeed={upload_speed}", "--port", port, sketch_path],
-        cwd=Path(sketch_path),
-    )
+    """Upload sketch to port, at the given speed where the board supports it."""
+    upload_fqbn = with_upload_speed(fqbn, upload_speed)
+    speed_note = f" at {upload_speed} baud" if upload_fqbn != fqbn else ""
+    console.print(f"[cyan]Uploading to {port}{speed_note}[/cyan]")
+    return run(["upload", "--fqbn", upload_fqbn, "--port", port, "."], cwd=Path(sketch_path))
 
 
 def monitor(port: str, baudrate: int) -> int:
