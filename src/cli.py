@@ -120,7 +120,7 @@ def monitor(port: str, baudrate: int) -> int:
     console.print("[yellow]Press Ctrl+C to exit monitor[/yellow]\n")
     cmd = ["arduino-cli", "monitor", "--port", port, "--config", f"baudrate={baudrate}"]
     try:
-        result = subprocess.run(cmd)
+        result = subprocess.run(cmd, check=False)
         return result.returncode
     except KeyboardInterrupt:
         console.print("\n[yellow]Interrupted by user[/yellow]")
